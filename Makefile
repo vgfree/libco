@@ -59,7 +59,8 @@ DYLIB_CFLAGS =		-shared -Wl,-soname,$(TARGET_SONAME)
 #######
 INSTALL_HEAD_FILE = 	@-rm -rf $(IOBJ_DIR); \
 			cp -rf $(BUILD_PWD) $(IOBJ_DIR);	\
-			find $(IOBJ_DIR) -name "*.c" -exec rm {} \;
+			find $(IOBJ_DIR) -type f -not -name "*.h" -exec rm -rf {} \;; \
+			find $(IOBJ_DIR) -type d -empty -exec rm -rf {} \;
 
 INSTALL_DYLIB_FILE = 	@-ln -sf $(TARGET_DLNAME) $(TOBJ_DIR)/$(TARGET_SONAME); \
 			ln -sf $(TARGET_SONAME) $(TOBJ_DIR)/$(TARGET_NAME)
