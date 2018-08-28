@@ -35,15 +35,17 @@ TARGET_MAJOR ?=		1
 TARGET_MINOR ?= 	0
 TARGET_ARNAME =		$(TARGET).a
 
-#SRC =			$(wildcard $(BUILD_PWD)/*.c) $(wildcard $(BUILD_PWD)/*.S)
-SRC =			$(BUILD_PWD)/libco.c
-_OBJ =			$(patsubst %.c, $(SOBJ_DIR)/%.o, $(notdir $(SRC)))
-OBJ =			$(patsubst %.S, $(SOBJ_DIR)/%.o, $(_OBJ))
+FOBJ_DIR =		src
 SOBJ_DIR =		objs
 TOBJ_DIR =		lib
 IOBJ_DIR =		include
 
-vpath %.c ./	#指定编译需要查找.c文件的目录
+#SRC =			$(wildcard $(FOBJ_DIR)/*.c) $(wildcard $(FOBJ_DIR)/*.S)
+SRC =			$(FOBJ_DIR)/libco.c
+_OBJ =			$(patsubst %.c, $(SOBJ_DIR)/%.o, $(notdir $(SRC)))
+OBJ =			$(patsubst %.S, $(SOBJ_DIR)/%.o, $(_OBJ))
+
+vpath %.c $(FOBJ_DIR)/	#指定编译需要查找.c文件的目录
 
 #######
 ifeq ($(BUILD_HOST), darwin)
@@ -66,7 +68,7 @@ DYLIB_CFLAGS =		-shared -Wl,-soname,$(TARGET_SONAME)
 endif
 #######
 INSTALL_HEAD_FILE = 	@-rm -rf $(IOBJ_DIR); \
-			cp -rf $(BUILD_PWD) $(IOBJ_DIR);	\
+			cp -rf $(FOBJ_DIR) $(IOBJ_DIR);	\
 			find $(IOBJ_DIR) -type f -not -name "*.h" -exec rm -rf {} \;; \
 			find $(IOBJ_DIR) -type d -empty -exec rm -rf {} \;
 
@@ -90,10 +92,10 @@ prepare:
 	@-if [ ! -d $(TOBJ_DIR) ];then mkdir $(TOBJ_DIR); fi
 	@-if [ ! -d $(IOBJ_DIR) ];then mkdir $(IOBJ_DIR); fi
 
-$(SOBJ_DIR)/%.o: %.c
+$(SOBJ_DIR)/%.o: $(FOBJ_DIR)/%.c
 	$(call compile_obj, $<, $@)
 
-$(SOBJ_DIR)/%.o: %.S
+$(SOBJ_DIR)/%.o: $(FOBJ_DIR)/%.S
 	$(call compile_obj, $<, $@)
 
 
