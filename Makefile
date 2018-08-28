@@ -46,6 +46,14 @@ IOBJ_DIR =		include
 vpath %.c ./	#指定编译需要查找.c文件的目录
 
 #######
+ifeq ($(BUILD_HOST), darwin)
+
+ECHO =			@echo
+TARGET_DLSUFFIX =	dylib
+TARGET_NAME = 		$(TARGET).$(TARGET_DLSUFFIX)
+TARGET_DLNAME =		$(TARGET_NAME)
+DYLIB_CFLAGS =		-dynamiclib
+else
 BUILD_CFLAGS += -D_GNU_SOURCE -export-dynamic
 BUILD_LIB_DIR += -L/usr/local/lib64 -L/usr/lib64
 
@@ -55,7 +63,7 @@ TARGET_NAME = 		$(TARGET).$(TARGET_DLSUFFIX)
 TARGET_DLNAME =		$(TARGET_NAME).$(TARGET_MAJOR).$(TARGET_MINOR)
 TARGET_SONAME = 	$(TARGET_NAME).$(TARGET_MAJOR)
 DYLIB_CFLAGS =		-shared -Wl,-soname,$(TARGET_SONAME)
-
+endif
 #######
 INSTALL_HEAD_FILE = 	@-rm -rf $(IOBJ_DIR); \
 			cp -rf $(BUILD_PWD) $(IOBJ_DIR);	\
@@ -72,6 +80,9 @@ define compile_obj
 endef
 
 #######
+ALL:
+	$(CC) $(BUILD_PWD)/example.c -o $(BUILD_PWD)/example $(BUILD_LIBS)
+
 lib: prepare  $(TARGET)
 
 prepare:
