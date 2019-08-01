@@ -1,11 +1,6 @@
-/*
-  libco.win (2008-01-28)
-  authors: Nach, byuu
-  license: public domain
-*/
-
 #define LIBCO_C
 #include "libco.h"
+#include "settings.h"
 
 #define WINVER 0x0400
 #define _WIN32_WINNT 0x0400
@@ -27,6 +22,11 @@ cothread_t co_active() {
     co_active_ = GetCurrentFiber();
   }
   return co_active_;
+}
+
+cothread_t co_derive(void* memory, unsigned int heapsize, void (*coentry)(void)) {
+  //Windows fibers do not allow users to supply their own memory
+  return (cothread_t)0;
 }
 
 cothread_t co_create(unsigned int heapsize, void (*coentry)(void)) {
